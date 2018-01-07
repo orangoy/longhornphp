@@ -30,16 +30,18 @@ class Project {
 
     private $manager;
     private $project_id;
+    private $persistent;
 
-    public function __construct(Manager $mgr)
+    public function __construct(Manager $mgr, $persistent = false)
     {
          $this->manager = $mgr;
          $this->project_id = $this->manager->newProject();
+         $this->persistent = $persistent;
     }
 
     public function __destruct()
     {
-        $this->manager->deleteProject($this->project_id);
+        if(!$this->persistent) $this->manager->deleteProject($this->project_id);
     }
 
     /**
