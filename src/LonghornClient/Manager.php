@@ -1,20 +1,11 @@
 <?php
 namespace LonghornClient;
 /*
-Okapi Longhorn PHP Wrapper: manager class:
-Provides helper classes for managing Longhorn projects and implements the following Longhorn REST HTTP methods:
-POST http://{host}/okapi-longhorn/projects/new: Creates a new temporary project and returns its URI (e.g. http://localhost/okapi-longhorn/projects/1)
-GET http://{host}/okapi-longhorn/projects: Returns a list of all projects on the server
-DEL http://{host}/okapi-longhorn/projects/1: Deletes the project
+Okapi Longhorn PHP Wrapper: manager class. Provides helper methods for managing Longhorn projects and implements the following Longhorn REST HTTP methods.
 */
 
 class Manager extends RestClient {
 
-
-
-    /**
-     * @param mixed $fi
-     */
     public function __construct($url="http://localhost:8080/okapi-longhorn/")
     {
         try {
@@ -26,6 +17,7 @@ class Manager extends RestClient {
         }
     }
 
+    // POST http://{host}/okapi-longhorn/projects/new: Creates a new temporary project
     public function newProject(){
          return $this->tryCreate();
     }
@@ -54,6 +46,7 @@ class Manager extends RestClient {
         else return false;
     }
 
+    // DEL http://{host}/okapi-longhorn/projects/1: Deletes the project
     public function deleteProject($project_id){
         if ($this->isProject($project_id)){
             return $this->curlrequest('DELETE', "/projects/".$project_id);
@@ -68,6 +61,7 @@ class Manager extends RestClient {
         }
     }
 
+    // GET http://{host}/okapi-longhorn/projects: Returns a list of all projects on the server
     public function listProjects(){
         $projects_response = $this->curlrequest('GET', "/projects");
 
