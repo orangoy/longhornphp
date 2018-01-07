@@ -1,16 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: rangoy
- * Date: 07.01.18
- * Time: 07:29
- */
-
 namespace LonghornClient;
 /*
 Okapi Longhorn PHP Wrapper: project class
 With the persistent flag on (default) the project is automatically deleted by the class destructor after use.
-
  */
 class Project {
 
@@ -35,48 +27,55 @@ class Project {
         if(!$this->persistent) $this->manager->deleteProject($this->project_id);
     }
 
+    // GET http://{host}/okapi-longhorn/projects/1/outputFiles: Returns a list of the output files generated
+    public function listOutputFiles(){
+        return $this->manager->curlrequest('GET', "/projects/".$this->project_id."/outputFiles/");
+    }
+
     // GET http://{host}/okapi-longhorn/projects/1/outputFiles/help.out.html: Accesses the output file 'help.out.html' directly
     public function getOutPutFile($filename){
-
+        return $this->manager->curlrequest('GET', "/projects/".$this->project_id."/outputFiles/".$filename);
     }
 
     // GET http://{host}/okapi-longhorn/projects/1/outputFiles.zip: Returns all output files in a zip archive
     public function getOutPutFilesZip(){
-
-    }
-
-    // GET http://{host}/okapi-longhorn/projects/1/outputFiles/help.out.html: Accesses the output file 'help.out.html' directly
-    public function listOutputFiles(){
-
+        return $this->manager->curlrequest('GET', "/projects/".$this->project_id."/outputFiles.zip");
     }
 
     // POST http://{host}/okapi-longhorn/projects/1/batchConfiguration: Uploads a Batch Configuration file
     public function inputBatchConfig($configcontent){
-        return $configcontent;
+        return $this->manager->curlrequest('POST', "/projects/".$this->project_id."/batchConfiguration", $configcontent);
     }
 
     // POST http://{host}/okapi-longhorn/projects/1/inputFiles.zip: Adds input files as a zip archive (the zip will be extracted and the included files will be used as input files)
     public function inputZip($zipcontent){
-        return $zipcontent;
+        return $this->manager->curlrequest('POST', "/projects/".$this->project_id."/inputFiles.zip", $zipcontent);
     }
 
     // PUT http://{host}/okapi-longhorn/projects/1/inputFiles/help.html: Uploads a file that will have the name 'help.html'
-    public function inputFile($filecontent){
-        return $filecontent;
+    public function inputFile($filename, $filecontent){
+        return $this->manager->curlrequest('PUT', "/projects/".$this->project_id."/inputFiles/".$filename, $filecontent);
     }
 
     // GET http://{host}/okapi-longhorn/projects/1/inputFiles/help.html: Retrieve an input file that was previously added with PUT or POST
-    public function putBatchConfig($config){
-        return $config;
+    public function getInputFile($filename){
+        return $this->manager->curlrequest('GET', "/projects/".$this->project_id."/inputFiles/".$filename);
     }
 
     // POST http://{host}/okapi-longhorn/projects/1/tasks/execute: Executes the Batch Configuration on the uploaded input files
-    // POST http://{host}/okapi-longhorn/projects/1/tasks/execute/en-US/de-DE: Executes the Batch Configuration on the uploaded input files with the source language set to 'en-US' and the target language set to 'de-DE'
-    // POST http://{host}/okapi-longhorn/projects/1/tasks/execute/en-US?targets=de-DE&targets=fr-FR: Executes the Batch Configuration on the uploaded input files with the source language set to 'en-US' and multiple target languages, 'de-DE' and 'fr-FR'
+    // + POST ... /execute/en-US/de-DE: Executes the Batch Configuration on the uploaded input files with the source language set to 'en-US' and the target language set to 'de-DE'
+    // + POST ... /execute/en-US?targets=de-DE&targets=fr-FR: Executes the Batch Configuration on the uploaded input files with the source language set to 'en-US' and multiple target languages, 'de-DE' and 'fr-FR'
     public function executeTasks(){
-        return true;
+        if(!empty($this->srclang && count($this->trglangs) > 1)){
+            $trg = implode("&targets=",$this->trglangs);
+            return $this->manager->curlrequest('POST', "/projects/".$this->project_id."/tasks/execute/".$this->srclang."?targets=".$trg);
+        }  else if(!empty($this->srclang && count($this->trglangs) == 1)) {
+            $trg = array_values($this->trglangs)[0];
+            return $this->manager->curlrequest('POST', "/projects/".$this->project_id."/tasks/execute/".$this->srclang."/".$trg);
+        } else {
+            return $this->manager->curlrequest('POST', "/projects/".$this->project_id."/tasks/execute");
+        }
     }
-
 
     /**
      * @return mixed
@@ -149,5 +148,3 @@ class Project {
     }
 
 }
-
-

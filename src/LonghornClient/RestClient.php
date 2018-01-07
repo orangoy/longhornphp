@@ -52,7 +52,7 @@ class RestClient{
         return $this->url;
     }
 
-    protected function curlrequest($method, $path, $data = null){
+    public function curlrequest($method, $path, $data = null){
         // Common options
         foreach([
                     CURLOPT_RETURNTRANSFER => true,
