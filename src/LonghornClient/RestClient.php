@@ -52,7 +52,7 @@ class RestClient{
         return $this->url;
     }
 
-    public function curlrequest($method, $path, $data = null){
+    public function curlrequest($method, $path, $data = null, $datatype=null){
         // Common options
         foreach([
                     CURLOPT_RETURNTRANSFER => true,
@@ -70,7 +70,8 @@ class RestClient{
             case 'PUT':
                 $this->curlopt(CURLOPT_PUT, true);
                 $this->curlopt(CURLOPT_INFILE, $data);
-                $this->curlopt(CURLOPT_INFILESIZE, strlen($data));
+                $fstats = fstat($data);
+                $this->curlopt(CURLOPT_INFILESIZE, $fstats['size']);
                 break;
             case 'DELETE':
                 $this->curlopt(CURLOPT_CUSTOMREQUEST, "DELETE");
@@ -87,6 +88,14 @@ class RestClient{
 
     protected function curlinit(){
             return curl_init();
+     }
+
+    public function curlfile($filename, $mime, $postname){
+         if (function_exists('curl_file_create')) { // php 5.5+
+             return curl_file_create($filename, $mime, $postname);
+         } else { //
+             return '@' . realpath($filename);
+         }
      }
 
     protected function curlopt($key, $value){
