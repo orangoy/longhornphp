@@ -20,6 +20,11 @@ class Project
         $this->persistent = $persistent;
         $this->srclang = $srclang;
         $this->trglangs = $trglangs;
+
+        // Default to constants
+        if ($this->srclang == null && defined('LONGHORNSRCLANG')) $this->setSrclang(LONGHORNSRCLANG);
+        if (empty($this->trglangs) && defined('LONGHORNTRGLANG')) $this->setTrglang(LONGHORNTRGLANG);
+
     }
 
     public function __destruct()
@@ -33,11 +38,31 @@ class Project
         return $this->manager->curlrequest('GET', "/projects/" . $this->project_id . "/outputFiles/");
     }
 
+    public function listOutputFilesArray(){
+        $of_resp = $this->listOutputFiles();
+        if (!$of = simplexml_load_string($of_resp->getContent())) {
+            return array();
+        } else {
+            return array_values((array) $of->e);
+        }
+    }
+
+
     // GET http://{host}/okapi-longhorn/projects/1/outputFiles: Returns a list of the output files generated
     public function listInputFiles()
     {
         return $this->manager->curlrequest('GET', "/projects/" . $this->project_id . "/inputFiles/");
     }
+
+    public function listInputFilesArray(){
+        $if_resp = $this->listInputFiles();
+        if (!$if = simplexml_load_string($if_resp->getContent())) {
+            return array();
+        } else {
+            return array_values((array) $if->e);
+        }
+    }
+
 
 
     // GET http://{host}/okapi-longhorn/projects/1/outputFiles/help.out.html: Accesses the output file 'help.out.html' directly
@@ -62,18 +87,18 @@ class Project
     // POST http://{host}/okapi-longhorn/projects/1/inputFiles.zip: Adds input files as a zip archive (the zip will be extracted and the included files will be used as input files)
     public function inputZip($zipfile)
     {
-        return $this->manager->curlrequest('POST', "/projects/" . $this->project_id . "/inputFiles.zip", $zipfile);
+        $post = array('inputFile'=> $this->manager->curlfile($zipfile,'application/octet-stream',basename($zipfile)));
+        return $this->manager->curlrequest('POST', "/projects/" . $this->project_id . "/inputFiles.zip", $post);
     }
 
-    // PUT http://{host}/okapi-longhorn/projects/1/inputFiles/help.html: Uploads a file that will have the name 'help.html'
+    // POST http://{host}/okapi-longhorn/projects/1/inputFiles/help.html: Uploads a file that will have the name 'help.html'
     public function inputFile($file)
     {
-        //$data = array('inputFile'=> $this->manager->curlfile($file,'application/octet-stream',$filename ));
         $post = array('inputFile'=> $this->manager->curlfile($file,'application/octet-stream',basename($file)));
         return $this->manager->curlrequest('POST', "/projects/" . $this->project_id . "/inputFiles/" . basename($file), $post);
     }
 
-    // GET http://{host}/okapi-longhorn/projects/1/inputFiles/help.html: Retrieve an input file that was previously added with PUT or POST
+    // GET http://{host}/okapi-longhorn/projects/1/inputFiles/help.html: Retrieve an input file that was previously added with (PUT or) POST
     public function getInputFile($filename)
     {
         return $this->manager->curlrequest('GET', "/projects/" . $this->project_id . "/inputFiles/" . $filename);
@@ -146,6 +171,13 @@ class Project
         $this->trglangs = $trglangs;
         return $this;
     }
+
+    public function setTrglang($trglang)
+    {
+        $this->setTrglangs(array($trglang));
+        return $this;
+    }
+
 
     /**
      * @return Manager

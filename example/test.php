@@ -3,38 +3,48 @@ require_once "../vendor/autoload.php";
 require_once "../src/LonghornClient/RestClient.php";
 require_once "../src/LonghornClient/Manager.php";
 require_once "../src/LonghornClient/Project.php";
-
 use LonghornClient\Manager;
 use LonghornClient\Project;
 
+/* These constants can be used for source and target language defaults */
+define('LONGHORNSRCLANG','et-EE');
+define('LONGHORNTRGLANG','nb-NO');
+
+/* Instantiate manager */
 $mgr = new Manager;
-$p = new Project($mgr, true);
+/* Instantiate Project -- if persistent flag is true, it will not be deleted when the script terminates */
+$p = new Project($mgr, false);
 
-$currentDir = dirname(__FILE__);
-$bconf =$currentDir."/test.bconf";
-$docx = $currentDir."/test.docx";
+/* List projects to demonstrate it exists */
+$projects = $mgr->listProjectsArray();
 
-//$docxfile=file($docx);
+/* The source and target methods used after project creation will override any defaults */
+$p->setTrglang('sv-FI');
 
-// $p->inputBatchConfig($bconf);
+/* Upload the batch config file */
+$bconf =dirname(__FILE__)."/test.bconf";
+$p->inputBatchConfig($bconf);
 
-
- print_r($p->inputFile($docx)->getStatusCode());
-
-
-
-print_r($mgr->listProjects());
-print_r((array) simplexml_load_string($p->listInputFiles()->getContent()));
-print_r((array) simplexml_load_string($p->listOutputFiles()->getContent()));
-
+/* Upload an input file */
+$docx = dirname(__FILE__)."/test.docx";
+//$p->inputFile($docx);
+echo $p->inputZip(dirname(__FILE__)."/test.zip")->getStatusCode();
 
 
+/* List all input files array */
+$infiles = $p->listInputFilesArray();
 
+/* Execute the project */
+$p->executeTasks();
 
-//echo "\n";
-//print_r($p->inputFile(basename($docx), $docx)->getStatusCode());
-//echo "\n";
-// print_r($p->inputFile("test.docx", $docx));
-// print_r($p->executeTasks());
-// echo $p->getProjectId() . "\n";
+/* List output files as array */
+$outfiles = $p->listOutputFilesArray();
+
+/* Delete all projects */
 // $mgr->deleteAllProjects();
+
+echo "Projects:\n".implode(" ", $projects)."\n\n";
+echo "Current project: ".$p->getProjectId()."\n\n";
+echo "Input files:\n".implode(" ", $infiles)."\n\n";
+echo "Output files:\n".implode(" ", $outfiles)."\n\n";
+

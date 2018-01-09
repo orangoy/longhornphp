@@ -27,9 +27,9 @@ class Manager extends RestClient {
         Ugly workaround is comparing list before and after creation.
         TODO: Find a better solution for determining new ID */
         do {
-        $beforelist = $this->listProjects();
+        $beforelist = $this->listProjectsArray();
         $this->curlrequest('POST', "/projects/new");
-        $afterlist = $this->listProjects();
+        $afterlist = $this->listProjectsArray();
         $new_ids = array_values(array_diff($afterlist, $beforelist));
         break;
         } while ( count($new_ids) != 1);
@@ -38,7 +38,7 @@ class Manager extends RestClient {
 
     public function isProject($project_id){
         try {
-            $projects = $this->listProjects();
+            $projects = $this->listProjectsArray();
         } catch (\Exception $e) {
             echo 'Exception: '.$e->getMessage();
         }
@@ -56,20 +56,26 @@ class Manager extends RestClient {
     }
 
     public function deleteAllProjects(){
-        foreach ($this->listProjects() as $project_id) {
+        foreach ($this->listProjectsArray() as $project_id) {
             $this->deleteProject($project_id);
         }
     }
 
     // GET http://{host}/okapi-longhorn/projects: Returns a list of all projects on the server
     public function listProjects(){
-        $projects_response = $this->curlrequest('GET', "/projects");
+        return $this->curlrequest('GET', "/projects");
+    }
+
+    public function listProjectsArray(){
+        $projects_response = $this->listProjects();
 
         if (!$projects = simplexml_load_string($projects_response->getContent())) {
             return array();
         } else {
-            return (array) $projects->e;
+            return array_values((array) $projects->e);
         }
     }
+
+
 
 }
