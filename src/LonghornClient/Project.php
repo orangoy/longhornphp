@@ -33,6 +33,13 @@ class Project
         return $this->manager->curlrequest('GET', "/projects/" . $this->project_id . "/outputFiles/");
     }
 
+    // GET http://{host}/okapi-longhorn/projects/1/outputFiles: Returns a list of the output files generated
+    public function listInputFiles()
+    {
+        return $this->manager->curlrequest('GET', "/projects/" . $this->project_id . "/inputFiles/");
+    }
+
+
     // GET http://{host}/okapi-longhorn/projects/1/outputFiles/help.out.html: Accesses the output file 'help.out.html' directly
     public function getOutPutFile($filename)
     {
@@ -59,9 +66,11 @@ class Project
     }
 
     // PUT http://{host}/okapi-longhorn/projects/1/inputFiles/help.html: Uploads a file that will have the name 'help.html'
-    public function inputFile($filename, $file)
+    public function inputFile($file)
     {
-        return $this->manager->curlrequest('PUT', "/projects/" . $this->project_id . "/inputFiles/" . $filename, $file);
+        //$data = array('inputFile'=> $this->manager->curlfile($file,'application/octet-stream',$filename ));
+        $post = array('inputFile'=> $this->manager->curlfile($file,'application/octet-stream',basename($file)));
+        return $this->manager->curlrequest('POST', "/projects/" . $this->project_id . "/inputFiles/" . basename($file), $post);
     }
 
     // GET http://{host}/okapi-longhorn/projects/1/inputFiles/help.html: Retrieve an input file that was previously added with PUT or POST

@@ -61,18 +61,32 @@ class RestClient{
 
         // Method definitions
         switch ($method) {
+
             case 'GET':
                 break;
+
             case 'POST':
                 $this->curlopt(CURLOPT_POST, true);
                 $this->curlopt(CURLOPT_POSTFIELDS, $data);
                 break;
+
             case 'PUT':
-                $this->curlopt(CURLOPT_PUT, true);
-                $this->curlopt(CURLOPT_INFILE, $data);
-                $fstats = fstat($data);
-                $this->curlopt(CURLOPT_INFILESIZE, $fstats['size']);
+                $this->curlopt( CURLOPT_RETURNTRANSFER, 1);
+                $this->curlopt(CURLOPT_PUT, 1);
+                $fh_res = fopen($data, 'r');
+                $this->curlopt( CURLOPT_INFILE, $fh_res);
+                $this->curlopt( CURLOPT_INFILESIZE, filesize($data));
+                fclose($fh_res);
+                // $this->curlopt( CURLOPT_INFILE, STDIN);
+                //$this->curlopt(CURLOPT_RETURNTRANSFER, true);
+                //$this->curlopt( CURLOPT_CUSTOMREQUEST, "PUT");
+                //$this->curlopt( CURLOPT_POSTFIELDS,http_build_query($data));
+                //$this->curlopt( CURLOPT_POSTFIELDS,$data);
+                //$this->curlopt(CURLOPT_HTTPHEADER, array('Content-Type: application/octet-stream', 'X-HTTP-Method-Override: PUT'));
+                //$this->curlopt(CURLOPT_INFILE, $data);
+                //$this->curlopt(CURLOPT_INFILESIZE, fstat($data)['size']);
                 break;
+
             case 'DELETE':
                 $this->curlopt(CURLOPT_CUSTOMREQUEST, "DELETE");
                 break;
@@ -81,6 +95,7 @@ class RestClient{
         // Execute, reset and return
         $ccontent = curl_exec($this->curl);
         $cinfo = curl_getinfo($this->curl);
+        if($method == "PUT") print_r($cinfo);
         $response = new Response($ccontent,  $cinfo['http_code'], array( 'content-type' => $cinfo['content_type']));
         curl_reset($this->curl);
         return $response;

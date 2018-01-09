@@ -8,20 +8,33 @@ use LonghornClient\Manager;
 use LonghornClient\Project;
 
 $mgr = new Manager;
-$p = new Project($mgr, false);
+$p = new Project($mgr, true);
+
+$currentDir = dirname(__FILE__);
+$bconf =$currentDir."/test.bconf";
+$docx = $currentDir."/test.docx";
+
+//$docxfile=file($docx);
+
+// $p->inputBatchConfig($bconf);
 
 
-$cur = dirname(__FILE__);
-//$docx = $cur."/test.docx";
-$bconf =$cur."/test.bconf";
+ print_r($p->inputFile($docx)->getStatusCode());
 
-//$p->inputBatchConfig($bconf);
-print_r($p->inputBatchConfig($bconf)->getStatusCode());
 
+
+print_r($mgr->listProjects());
+print_r((array) simplexml_load_string($p->listInputFiles()->getContent()));
+print_r((array) simplexml_load_string($p->listOutputFiles()->getContent()));
+
+
+
+
+
+//echo "\n";
+//print_r($p->inputFile(basename($docx), $docx)->getStatusCode());
+//echo "\n";
 // print_r($p->inputFile("test.docx", $docx));
 // print_r($p->executeTasks());
-// print_r($p->listOutputFiles());
-
 // echo $p->getProjectId() . "\n";
-
-//$mgr->deleteAllProjects();
+// $mgr->deleteAllProjects();
