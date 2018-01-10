@@ -78,7 +78,6 @@ class RestClient{
         // Execute, reset and return
         $ccontent = curl_exec($this->curl);
         $cinfo = curl_getinfo($this->curl);
-        if($method == "PUT") print_r($cinfo);
         $response = new Response($ccontent,  $cinfo['http_code'], array( 'content-type' => $cinfo['content_type']));
         curl_reset($this->curl);
         return $response;
