@@ -1,5 +1,5 @@
 <?php
-namespace LonghornClient;
+namespace Estnorlink\LonghornClient;
 /*
 Okapi Longhorn PHP Wrapper: manager class. Provides helper methods for managing Longhorn projects and implements the following Longhorn REST HTTP methods.
 */

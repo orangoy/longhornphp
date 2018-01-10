@@ -1,5 +1,5 @@
 <?php
-namespace LonghornClient;
+namespace Estnorlink\LonghornClient;
 use Symfony\Component\HttpFoundation\Response;
 /*
 Provides helper classes for accessing Rest API

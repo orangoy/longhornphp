@@ -1,6 +1,6 @@
 <?php
 
-namespace LonghornClient;
+namespace Estnorlink\LonghornClient;
 /*
 Okapi Longhorn PHP Wrapper: project class
 With the persistent flag on (default) the project is automatically deleted by the class destructor after use.
