@@ -2,7 +2,7 @@
     "name": "orangoy/longhornphp",
     "autoload": {
         "psr-0" : {
-            "LonghornClient" : "src"
+            "Estnorlink\\LonghornClient" : "src"
         }
     },
     "require": {
