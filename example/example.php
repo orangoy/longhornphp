@@ -8,6 +8,13 @@
 
 require_once "../vendor/autoload.php";
 
+/* The longhorn URL can be specified as an argument to the manager.
+If no arguments are given, it will look for the constant LONGHORNURL
+If this is also not given, it will default to the constructor default argument
+*/
+
+define('LONGHORNURL','http://localhost:8080/okapi-longhorn/');
+
 /* These constants can be used for source and target language defaults */
 define('LONGHORNSRCLANG','et-EE');
 define('LONGHORNTRGLANG','nb-NO');

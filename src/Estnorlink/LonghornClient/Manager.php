@@ -6,8 +6,12 @@ Okapi Longhorn PHP Wrapper: manager class. Provides helper methods for managing 
 
 class Manager extends RestClient {
 
-    public function __construct($url="http://localhost:8080/okapi-longhorn/")
+    public function __construct($url="http://127.0.0.1:8080/okapi-longhorn/")
     {
+        if(defined('LONGHORNURL')){
+            $url=LONGHORNURL;
+        }
+
         try {
             $this->setUrl($url);
             $this->curl = $this->curlinit();
