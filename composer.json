@@ -1,4 +1,10 @@
 {
+    "name": "orangoy/longhornphp",
+    "autoload": {
+        "psr-0" : {
+            "LonghornClient" : "src"
+        }
+    },
     "require": {
         "symfony/http-foundation": "^4.0"
     }
