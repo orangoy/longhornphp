@@ -3,8 +3,12 @@ namespace Estnorlink\LonghornClient;
 /*
 Okapi Longhorn PHP Wrapper: manager class. Provides helper methods for managing Longhorn projects and implements the following Longhorn REST HTTP methods.
 */
+use GuzzleHttp\Client;
 
 class Manager extends RestClient {
+
+    private $restclient;
+
 
     public function __construct($url="http://127.0.0.1:8080/okapi-longhorn/")
     {
@@ -14,11 +18,21 @@ class Manager extends RestClient {
 
         try {
             $this->setUrl($url);
-            $this->curl = $this->curlinit();
+            // $this->curl = $this->curlinit();
+
+            $client = new Client([
+                // Base URI is used with relative requests
+                'base_uri' => $url,
+                // You can set any number of default request options.
+                'timeout'  => 2.0,
+            ]);
+
         } catch (\Exception $e) {
             echo 'Exception: '.$e->getMessage();
             return false;
         }
+
+        return false;
     }
 
     // POST http://{host}/okapi-longhorn/projects/new: Creates a new temporary project
@@ -67,7 +81,11 @@ class Manager extends RestClient {
 
     // GET http://{host}/okapi-longhorn/projects: Returns a list of all projects on the server
     public function listProjects(){
+
+
         return $this->curlrequest('GET', "/projects");
+
+
     }
 
     public function listProjectsArray(){
